@@ -23,7 +23,7 @@ st.set_page_config(page_title="RAG")
 st.title("TAIDE: Unleashing the Power of RAG and LangChain")
 mode = st.sidebar.radio(
     "LLM type：",
-    ('TAIDE', 'openAI'))
+    ('TAIDE', 'openAI', 'myLLMs'))
 if mode == 'TAIDE':
     #openai_api_base = st.sidebar.text_input('URL:', type='default')
     openai_api_base = "https://td.nchc.org.tw/api/v1"
@@ -37,7 +37,12 @@ elif mode == 'openAI':
     #openai_api_base = st.sidebar.text_input('api_base:', type='password')    
     openai_api_base = "https://api.openai.com/v1"
     openai_api_key = st.sidebar.text_input('key:', type='password')
-
+elif mode == 'myLLMs':
+    openai_api_base = st.sidebar.text_input('api_base:', type='password')    
+    openai_api_key = st.sidebar.text_input('key:', type='password')
+    #openai_api_base = "http://gpn3001:8000/v1"
+    #openai_api_key = "1234"
+    
 def load_documents():
     loader = DirectoryLoader(TMP_DIR.as_posix(), glob='**/*.pdf')
     documents = loader.load()
@@ -57,7 +62,13 @@ def embeddings_on_local_vectordb(texts):
     elif mode == 'openAI':
         embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key,model="text-embedding-ada-002")
         vectordb = Chroma.from_documents(texts, embedding=embeddings, persist_directory=LOCAL_VECTOR_STORE_DIR_OPENAI.as_posix())
-
+    elif mode == 'myLLMs':
+        model_name = "sentence-transformers/all-MiniLM-L6-v2"
+        model_kwargs = {'device': 'cpu'}
+        embeddings = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs)
+        vectordb = Chroma.from_documents(texts, embedding=embeddings, persist_directory=LOCAL_VECTOR_STORE_DIR.as_posix())
+        
+        
     vectordb.persist()
     retriever = vectordb.as_retriever(search_kwargs={'k': 3})
     return retriever
@@ -68,7 +79,9 @@ def define_llm():
         llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model_name=my_model_name, temperature=0.7, max_tokens=1000) 
     elif mode == 'openAI':
         llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model="gpt-3.5-turbo-16k-0613", temperature=0.75, max_tokens=1000) 
-    
+    elif mode == 'myLLMs':
+        llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, temperature=0.75, max_tokens=1000) 
+        
     return llm
 
 def query_llm(retriever, query):
