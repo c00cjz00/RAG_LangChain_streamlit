@@ -27,7 +27,7 @@ mode = st.sidebar.radio(
 if mode == 'TAIDE':
     #openai_api_base = st.sidebar.text_input('URL:', type='default')
     openai_api_base = "https://td.nchc.org.tw/api/v1"
-    my_model_name = st.sidebar.radio("Model name：", ['TAIDE/b.11.0.0', 'TAIDE/t.0.1.0'],captions = ['繁中', '台語'])
+    my_model_name = st.sidebar.radio("Model name：", ['TAIDE/b.11.0.0', 'TAIDE/t.0.1.0', 'TAIDE/k.0.1.0'],captions = ['繁中', '台語', '客語'])
     username = st.sidebar.text_input('username:', type='password')
     password = st.sidebar.text_input('password:', type='password')
     if username != "" and password != "":
