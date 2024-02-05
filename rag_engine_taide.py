@@ -27,6 +27,7 @@ mode = st.sidebar.radio(
 if mode == 'TAIDE':
     #openai_api_base = st.sidebar.text_input('URL:', type='default')
     openai_api_base = "https://td.nchc.org.tw/api/v1"
+    my_model_name = st.sidebar.radio("Model name：", ['TAIDE/b.11.0.0', 'TAIDE/t.0.1.0'],captions = ['繁中', '台語'])
     username = st.sidebar.text_input('username:', type='password')
     password = st.sidebar.text_input('password:', type='password')
     if username != "" and password != "":
@@ -36,8 +37,6 @@ elif mode == 'openAI':
     #openai_api_base = st.sidebar.text_input('api_base:', type='password')    
     openai_api_base = "https://api.openai.com/v1"
     openai_api_key = st.sidebar.text_input('key:', type='password')
-
-
 
 def load_documents():
     loader = DirectoryLoader(TMP_DIR.as_posix(), glob='**/*.pdf')
@@ -65,7 +64,8 @@ def embeddings_on_local_vectordb(texts):
 
 def define_llm():
     if mode == 'TAIDE':
-        llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model_name="TAIDE/b.11.0.0", temperature=0.7, max_tokens=1000) 
+        #llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model_name="TAIDE/b.11.0.0", temperature=0.7, max_tokens=1000) 
+        llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model_name=my_model_name, temperature=0.7, max_tokens=1000) 
     elif mode == 'openAI':
         llm = ChatOpenAI(openai_api_key=openai_api_key, openai_api_base=openai_api_base, model="gpt-3.5-turbo-16k-0613", temperature=0.75, max_tokens=1000) 
     
